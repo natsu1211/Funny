@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProcessor", "ImageProcessor\ImageProcessor.vcxproj", "{692669BA-CBE6-447E-843E-539CD88734D3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProcessorCUI", "ImageProcessorCUI\ImageProcessorCUI.vcxproj", "{213C2597-1428-4868-BD5B-E4DAD6DBD399}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{692669BA-CBE6-447E-843E-539CD88734D3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{692669BA-CBE6-447E-843E-539CD88734D3}.Debug|Win32.Build.0 = Debug|Win32
+		{692669BA-CBE6-447E-843E-539CD88734D3}.Release|Win32.ActiveCfg = Release|Win32
+		{692669BA-CBE6-447E-843E-539CD88734D3}.Release|Win32.Build.0 = Release|Win32
+		{213C2597-1428-4868-BD5B-E4DAD6DBD399}.Debug|Win32.ActiveCfg = Debug|Win32
+		{213C2597-1428-4868-BD5B-E4DAD6DBD399}.Debug|Win32.Build.0 = Debug|Win32
+		{213C2597-1428-4868-BD5B-E4DAD6DBD399}.Release|Win32.ActiveCfg = Release|Win32
+		{213C2597-1428-4868-BD5B-E4DAD6DBD399}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
