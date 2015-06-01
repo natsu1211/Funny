@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 #include <cstdio>
+#include <iostream>
+#include <memory>
 
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
@@ -13,6 +15,7 @@ typedef unsigned char BYTE;
 
 #ifndef _MSC_VER
 #define abstract
+#define override
 #endif
 
 #if __cplusplus>=199711L 
@@ -22,7 +25,7 @@ typedef unsigned char BYTE;
 
 namespace LL
 {
-	//DWORD ReadNBytes(BYTE* buf, int32_t n);
+	DWORD ReadNBytes(BYTE* buf, int32_t n);
 
 	class ImageProcessorBase abstract
 	{
@@ -60,6 +63,20 @@ namespace LL
 		virtual bool Read(void *buffer, int32_t size) = 0;
 		virtual bool Write(void *buffer, int32_t size) = 0;
 		
+	};
+
+	class BMPFile : public FileBase
+	{
+	protected:
+		FILE *file_;
+	public:
+		BMPFile(const char *fileName, const char* mode);
+		~BMPFile();
+		virtual bool Open(const char *fileName, const char* mode) override;
+		virtual void Close() override;
+		virtual bool Read(void *buffer, int32_t size) override;
+		virtual bool Write(void *buffer, int32_t size) override;
+
 	};
 }
 
