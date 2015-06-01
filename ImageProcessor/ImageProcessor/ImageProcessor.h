@@ -11,8 +11,8 @@
 #endif
 
 #include "base.h"
-#include <iostream>
-#include <memory>
+
+
 
 
 namespace LL
@@ -56,16 +56,16 @@ namespace LL
 	public:
 		BMPImageProcessor();
 		virtual ~BMPImageProcessor();
-		virtual void LoadImages(const char * fileName) override;	
-		//virtual void SavaImages(const char *fileName);
+		virtual bool LoadImage(const char *fileName) override;	
+		//virtual void SavaImage(const char *fileName) override;
 
 	private:
 		shared_ptr<BitMapFileHeader> fileHeaderHandle;
 		shared_ptr<BitMapInfoHeader> infoHeaderHandle;
 		shared_ptr<DWORD> palette;
 		shared_ptr<BYTE> pixels;
-		FILE *file;
-		BYTE *buffer;
+		shared_ptr<BMPFile> bmpfile;
+		//BYTE *buffer;
 		//for debug
 		void TraceFileHeader();
 		void TraceInfoHeader();
