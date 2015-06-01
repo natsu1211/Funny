@@ -17,7 +17,7 @@
 
 // 这是已导出类的构造函数。
 // 有关类定义的信息，请参阅 ImageProcessor.h
-using namespace Image;
+using namespace LL;
 BMPImageProcessor::BMPImageProcessor()
 :fileHeaderHandle(nullptr), infoHeaderHandle(nullptr), palette(nullptr), pixels(nullptr), file(NULL), buffer(NULL)
 {

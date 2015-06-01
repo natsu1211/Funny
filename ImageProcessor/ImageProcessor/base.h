@@ -20,22 +20,23 @@ typedef unsigned char BYTE;
 #endif
 
 
-namespace Image
+namespace LL
 {
-	DWORD ReadNBytes(BYTE* buf, int32_t n);
+	//DWORD ReadNBytes(BYTE* buf, int32_t n);
 
 	class ImageProcessorBase abstract
 	{
 	public:
 		virtual ~ImageProcessorBase();
-		virtual void LoadImages(const char*) = 0;
-		//virtual void SavaImages(const char*) = 0;
+		virtual bool LoadImage(const char*) = 0;
+		virtual bool SaveImage(const char*) = 0;
+		virtual void RotateImage(const char*) = 0;
 
 	};
 
 	class Noncopyable
 	{
-	public:
+	protected:
 		Noncopyable(){};
 	#ifdef DELETA_FUNCTION_SUPPORTED
 		Noncopyable(const Noncopyable&) = delete ;
@@ -48,12 +49,17 @@ namespace Image
 	};
 
 
-	class FileBase : public Noncopyable
-	{
-	protected:
-		FILE *file;
-	//public:
 
+	class FileBase abstract : private Noncopyable
+	{
+	
+	public:
+		virtual ~FileBase();
+		virtual bool Open(const char *fileName, const char* mode) = 0;
+		virtual void Close() = 0;
+		virtual bool Read(void *buffer, int32_t size) = 0;
+		virtual bool Write(void *buffer, int32_t size) = 0;
+		
 	};
 }
 

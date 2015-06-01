@@ -11,12 +11,11 @@
 #endif
 
 #include "base.h"
-#include <cstdio>
 #include <iostream>
 #include <memory>
 
 
-namespace Image
+namespace LL
 {
 	using namespace std;
 
