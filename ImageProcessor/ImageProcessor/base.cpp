@@ -1,38 +1,38 @@
 #include "base.h"
 #include <assert.h>
 
-DWORD LL::ReadNBytes(void* buffer, int32_t offset, int32_t n)
-{
-	auto buf = static_cast<const BYTE*>(buffer);
-	DWORD ret = buf[0];
-	for (int i = 1; i < n; i++)
-	{
-		ret |= (buf[i] << 8*i);
-	}
-
-	return ret;
-}
+//DWORD LL::ReadNBytes(void* buffer, int32_t offset, int32_t n)
+//{
+//	auto buf = static_cast<const BYTE*>(buffer);
+//	DWORD ret = buf[0];
+//	for (int i = 1; i < n; i++)
+//	{
+//		ret |= (buf[i] << 8*i);
+//	}
+//
+//	return ret;
+//}
 
 LL::DecoderBase::~DecoderBase()
 {
 };
 
-LL::StreamBase::~StreamBase()
+LL::ReadCacheStream ::~ReadCacheStream()
 {
 
 };
 
-LL::FileStream::FileStream(const char *fileName, const char* mode)
+LL::ReadCacheStream::ReadCacheStream(const char *fileName, const char* mode)
 {
 	Open(fileName, mode);
 }
 
-LL::FileStream::~FileStream()
+LL::ReadCacheStream::~ReadCacheStream()
 {
 	Close();
 }
 
-bool LL::FileStream::Open(const char *fileName, const char* mode)
+bool LL::ReadCacheStream::Open(const char *fileName, const char* mode)
 {
 	file_ = fopen(fileName, mode);
 	if (file_ == NULL)
@@ -45,7 +45,7 @@ bool LL::FileStream::Open(const char *fileName, const char* mode)
 	return true;
 }
 
-void LL::FileStream::Close()
+void LL::ReadCacheStream::Close()
 {
 	if (file_)
 	{
@@ -55,35 +55,52 @@ void LL::FileStream::Close()
 
 }
 
-size_t LL::FileStream::Read(void *buffer, int32_t offset, int32_t size)
+//return the byte number been read
+size_t LL::ReadCacheStream::Read(void *buffer, int32_t offset, int32_t size)
 {
-	//using namespace std;
-	//long fileSize;
-	//
-	//assert(file_ != NULL);
-	//fseek(file_, 0, SEEK_END);
-	//fileSize = ftell(file_);
-	//rewind(file_);
-
-	//buffer = (BYTE*)malloc(sizeof(BYTE)*fileSize);
-
-	//if (buffer == NULL) { exit(2); }
-
-	//// copy the file into the buffer
-	//size_t result = fread(buffer, 1, fileSize, file_);
-	//if (result == 0) { exit(7); }
-	//if (result != fileSize) { exit(6); }
-	//fclose(file_);
 	assert(size > 0);
 	assert(offset < size);
 	auto buf = static_cast<BYTE*>(buffer);
 	return fread(buf + offset, 1, size, file_);
 }
 
-size_t LL::FileStream::Write(void *buffer, int32_t offset, int32_t size)
+
+DWORD LL::ReadCacheStream::ReadByte()
+{
+	//todo,add pos member to indicate the current position of file stream
+}
+
+
+/*Write Stream*/
+
+LL::WriteCacheStream::WriteCacheStream(const char *fileName, const char* mode)
+{
+	Open(fileName, mode);
+}
+
+
+LL::WriteCacheStream::~WriteCacheStream()
+{
+	Close();
+}
+
+bool LL::WriteCacheStream::Open(const char *fileName, const char* mode)
 {
 	//todo
+}
 
+void LL::WriteCacheStream::Close()
+{
+	if (file_)
+	{
+		fclose(file_);
+		file_ = NULL;
+	}
+
+}
+
+size_t LL::WriteCacheStream::Write(void *buffer, int32_t offset, int32_t size)
+{
 	assert(size > 0);
 	assert(offset < size);
 	auto buf = static_cast<BYTE*>(buffer);
