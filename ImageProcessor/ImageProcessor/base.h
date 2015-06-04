@@ -25,15 +25,15 @@ typedef unsigned char BYTE;
 
 namespace LL
 {
-	DWORD ReadNBytes(BYTE* buf, int32_t n);
+	
 
-	class ImageProcessorBase abstract
+	class DecoderBase abstract
 	{
 	public:
-		virtual ~ImageProcessorBase();
+		virtual ~DecoderBase();
 		virtual bool LoadImage(const char*) = 0;
-		virtual bool SaveImage(const char*) = 0;
-		virtual void RotateImage(const char*) = 0;
+		//virtual bool SaveImage(const char*) = 0;
+		//virtual void RotateImage(const char*) = 0;
 
 	};
 
@@ -53,29 +53,71 @@ namespace LL
 
 
 
-	class FileBase abstract : private Noncopyable
+	class ReadStreamBase abstract : private Noncopyable
 	{
 	
 	public:
-		virtual ~FileBase();
+		virtual ~ReadStreamBase();
 		virtual bool Open(const char *fileName, const char* mode) = 0;
 		virtual void Close() = 0;
-		virtual bool Read(void *buffer, int32_t size) = 0;
-		virtual bool Write(void *buffer, int32_t size) = 0;
-		
+		virtual size_t Read(void *buffer, int32_t offset, int32_t size) = 0;
+		//virtual size_t Write(void *buffer, int32_t offset, int32_t size) = 0;
+		//virtual bool Peek(void *buffer, int32_t size) = 0;
+		//n should be a intergal <=4
+		virtual DWORD ReadByte() = 0;
+		virtual DWORD ReadWord(bool isLittleEndian) = 0;
+		virtual DWORD ReadDWord(bool isLittleEndian) = 0;
 	};
 
-	class BMPFile : public FileBase
+	class WriteStreamBase abstract : private Noncopyable
+	{
+
+	public:
+		virtual ~WriteStreamBase();
+		virtual bool Open(const char *fileName, const char* mode) = 0;
+		virtual void Close() = 0;
+		//virtual size_t Read(void *buffer, int32_t offset, int32_t size) = 0;
+		virtual size_t Write(void *buffer, int32_t offset, int32_t size) = 0;
+		//virtual bool Peek(void *buffer, int32_t size) = 0;
+		virtual DWORD WriteByte() = 0;
+		virtual DWORD WriteWord(bool isLittleEndian) = 0;
+		virtual DWORD WriteDWord(bool isLittleEndian) = 0;
+	};
+
+
+	class ReadCacheStream : public ReadStreamBase
 	{
 	protected:
 		FILE *file_;
+		BYTE *buffer_;
 	public:
-		BMPFile(const char *fileName, const char* mode);
-		~BMPFile();
+		ReadCacheStream(const char *fileName, const char* mode);
+		virtual ~ReadCacheStream();
 		virtual bool Open(const char *fileName, const char* mode) override;
 		virtual void Close() override;
-		virtual bool Read(void *buffer, int32_t size) override;
-		virtual bool Write(void *buffer, int32_t size) override;
+		virtual size_t Read(void *buffer, int32_t offset, int32_t size) override;
+		//virtual size_t Write(void *buffer, int32_t offset, int32_t size) override;
+		virtual DWORD ReadByte() override;
+		virtual DWORD ReadWord(bool isLittleEndian) override;
+		virtual DWORD ReadDWord(bool isLittleEndian) override;
+
+	};
+
+	class WriteCacheStream : public WriteStreamBase
+	{
+	protected:
+		FILE *file_;
+		BYTE *buffer_;
+	public:
+		WriteCacheStream(const char *fileName, const char* mode);
+		virtual ~WriteCacheStream();
+		virtual bool Open(const char *fileName, const char* mode) override;
+		virtual void Close() override;
+		//virtual size_t Read(void *buffer, int32_t offset, int32_t size) override;
+		virtual size_t Write(void *buffer, int32_t offset, int32_t size) override;
+		virtual DWORD WriteByte() override;
+		virtual DWORD WriteWord(bool isLittleEndian) override;
+		virtual DWORD WriteDWord(bool isLittleEndian) override;
 
 	};
 }

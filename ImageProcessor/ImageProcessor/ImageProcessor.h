@@ -13,8 +13,6 @@
 #include "base.h"
 
 
-
-
 namespace LL
 {
 	using namespace std;
@@ -29,7 +27,7 @@ namespace LL
 
 	ImageType TypeofImage(const char* fileName);
 	
-	class BMPImageProcessor  : public ImageProcessorBase
+	class BMPDecoder : public DecoderBase
 	{
 		
 		struct BitMapFileHeader
@@ -54,17 +52,17 @@ namespace LL
 		};
 
 	public:
-		BMPImageProcessor();
-		virtual ~BMPImageProcessor();
+		BMPDecoder();
+		virtual ~BMPDecoder();
 		virtual bool LoadImage(const char *fileName) override;	
 		//virtual void SavaImage(const char *fileName) override;
 
-	private:
+	protected:
 		shared_ptr<BitMapFileHeader> fileHeaderHandle;
 		shared_ptr<BitMapInfoHeader> infoHeaderHandle;
 		shared_ptr<DWORD> palette;
 		shared_ptr<BYTE> pixels;
-		shared_ptr<BMPFile> bmpfile;
+		shared_ptr<StreamBase> bmpfile;
 		//BYTE *buffer;
 		//for debug
 		void TraceFileHeader();
@@ -81,7 +79,7 @@ struct ImageProcessorHandle;
 
 extern "C"
 {
-	extern IMAGEPROCESSOR_API void __stdcall OpenImages(ImageProcessorHandle *handle, const char *fileName);
+	extern IMAGEPROCESSOR_API void __stdcall OpenImage(ImageProcessorHandle *handle, const char *fileName);
 	extern IMAGEPROCESSOR_API ImageProcessorHandle* __stdcall CreateImageProcessor(const char *fileName);
 }
 
