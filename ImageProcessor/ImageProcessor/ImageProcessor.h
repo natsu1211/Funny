@@ -62,7 +62,7 @@ namespace LL
 		shared_ptr<BitMapInfoHeader> infoHeaderHandle;
 		shared_ptr<DWORD> palette;
 		shared_ptr<BYTE> pixels;
-		shared_ptr<StreamBase> bmpfile;
+		shared_ptr<ReadStreamBase> bmpfile;
 		//BYTE *buffer;
 		//for debug
 		void TraceFileHeader();
