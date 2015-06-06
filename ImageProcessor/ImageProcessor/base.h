@@ -90,8 +90,12 @@ namespace LL
 	protected:
 		FILE *file_;
 		BYTE *buffer_;
+		int startPos_;
+		int curPos_;
+		int endPos_;
+		int cacheSize_;
 	public:
-		ReadCacheStream(const char *fileName, const char* mode);
+		ReadCacheStream(const char *fileName, const char* mode, int cacheSize);
 		virtual ~ReadCacheStream();
 		virtual bool Open(const char *fileName, const char* mode) override;
 		virtual void Close() override;
@@ -100,6 +104,9 @@ namespace LL
 		virtual DWORD ReadByte() override;
 		virtual DWORD ReadWord(bool isLittleEndian) override;
 		virtual DWORD ReadDWord(bool isLittleEndian) override;
+	protected:
+		size_t ReadToCache(int bufStartPos);
+		size_t ReadFromCache(int32_t size);
 
 	};
 
@@ -108,6 +115,10 @@ namespace LL
 	protected:
 		FILE *file_;
 		BYTE *buffer_;
+		int startPos_;
+		int curPos_;
+		int endPos_;
+		int cacheSize_;
 	public:
 		WriteCacheStream(const char *fileName, const char* mode);
 		virtual ~WriteCacheStream();
@@ -118,6 +129,8 @@ namespace LL
 		virtual DWORD WriteByte() override;
 		virtual DWORD WriteWord(bool isLittleEndian) override;
 		virtual DWORD WriteDWord(bool isLittleEndian) override;
+	
+		
 
 	};
 }

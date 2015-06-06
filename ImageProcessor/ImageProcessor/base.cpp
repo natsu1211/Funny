@@ -22,8 +22,13 @@ LL::ReadCacheStream ::~ReadCacheStream()
 
 };
 
-LL::ReadCacheStream::ReadCacheStream(const char *fileName, const char* mode)
+LL::ReadCacheStream::ReadCacheStream(const char *fileName, const char* mode, int cacheSize)
+:file_(0), buffer_(0), startPos_(0),curPos_(0),endPos_(0), cacheSize_(cacheSize)
 {
+	if (cacheSize_ < 0)
+	{
+		cacheSize_ = 65536;
+	}
 	Open(fileName, mode);
 }
 
@@ -35,7 +40,7 @@ LL::ReadCacheStream::~ReadCacheStream()
 bool LL::ReadCacheStream::Open(const char *fileName, const char* mode)
 {
 	file_ = fopen(fileName, mode);
-	if (file_ == NULL)
+	if (file_ == 0)
 	{
 		std::cout << "file not exist" << std::endl;
 		fclose(file_);
@@ -50,7 +55,7 @@ void LL::ReadCacheStream::Close()
 	if (file_)
 	{
 		fclose(file_);
-		file_ = NULL;
+		file_ = 0;
 	}
 
 }
@@ -58,10 +63,18 @@ void LL::ReadCacheStream::Close()
 //return the byte number been read
 size_t LL::ReadCacheStream::Read(void *buffer, int32_t offset, int32_t size)
 {
-	assert(size > 0);
+	/*assert(size > 0);
 	assert(offset < size);
 	auto buf = static_cast<BYTE*>(buffer);
-	return fread(buf + offset, 1, size, file_);
+	return fread(buf + offset, 1, size, file_);*/
+
+
+}
+
+size_t LL::ReadCacheStream::ReadToCache(int bufStartPos)
+{
+	startPos_ = bufStartPos;
+	return fread(buffer_, 1, cacheSize_, file_);
 }
 
 
@@ -94,7 +107,7 @@ void LL::WriteCacheStream::Close()
 	if (file_)
 	{
 		fclose(file_);
-		file_ = NULL;
+		file_ = 0;
 	}
 
 }
