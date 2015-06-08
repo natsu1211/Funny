@@ -71,10 +71,20 @@ size_t LL::ReadCacheStream::Read(void *buffer, int32_t offset, int32_t size)
 
 }
 
-size_t LL::ReadCacheStream::ReadToCache(int bufStartPos)
+size_t LL::ReadCacheStream::ReadToCache(int streamStartPos)
 {
-	startPos_ = bufStartPos;
+	assert(file_);
+	if (ftell(file_) != streamStartPos)
+	{
+		fseek(file_, streamStartPos, SEEK_SET);
+	}
 	return fread(buffer_, 1, cacheSize_, file_);
+}
+
+size_t LL::ReadCacheStream::ReadFromCache(void *buffer, int32_t size)
+{
+	assert(size > 0);
+
 }
 
 

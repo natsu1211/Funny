@@ -106,7 +106,7 @@ namespace LL
 		virtual DWORD ReadDWord(bool isLittleEndian) override;
 	protected:
 		size_t ReadToCache(int bufStartPos);
-		size_t ReadFromCache(int32_t size);
+		size_t ReadFromCache(void *buffer, int32_t size);
 
 	};
 
