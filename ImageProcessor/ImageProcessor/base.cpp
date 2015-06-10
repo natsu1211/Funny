@@ -29,12 +29,21 @@ LL::ReadCacheStream::ReadCacheStream(const char *fileName, const char* mode, int
 	{
 		cacheSize_ = 65536;
 	}
+	buffer_ = new BYTE[cacheSize_];
 	Open(fileName, mode);
 }
 
 LL::ReadCacheStream::~ReadCacheStream()
 {
+	delete[] buffer_;
 	Close();
+	file_ = 0;
+	buffer_ = 0;
+	startPos_ = endPos_ = 0;
+	curPos_ = -1;
+	cacheSize_ = -1;
+
+
 }
 
 bool LL::ReadCacheStream::Open(const char *fileName, const char* mode)
@@ -63,10 +72,10 @@ void LL::ReadCacheStream::Close()
 //return the byte number been read
 size_t LL::ReadCacheStream::Read(void *buffer, int32_t offset, int32_t size)
 {
-	/*assert(size > 0);
+	assert(size > 0);
 	assert(offset < size);
 	auto buf = static_cast<BYTE*>(buffer);
-	return fread(buf + offset, 1, size, file_);*/
+	return ReadFromCache(buf + offset, size);
 
 
 }
@@ -74,23 +83,113 @@ size_t LL::ReadCacheStream::Read(void *buffer, int32_t offset, int32_t size)
 size_t LL::ReadCacheStream::ReadToCache(int streamStartPos)
 {
 	assert(file_);
+	int len = 0;
 	if (ftell(file_) != streamStartPos)
 	{
 		fseek(file_, streamStartPos, SEEK_SET);
 	}
-	return fread(buffer_, 1, cacheSize_, file_);
+	
+	int len = fread(buffer_, 1, cacheSize_, file_);
+	startPos_ = curPos_;
+	endPos_ = startPos_ + len;
+	return len;
 }
 
 size_t LL::ReadCacheStream::ReadFromCache(void *buffer, int32_t size)
 {
 	assert(size > 0);
+	int readed = 0;
+	int len = 0;
+	BYTE *data = static_cast<BYTE*>(buffer);
+	while (size > 0)
+	{
+		if (curPos_ < endPos_)
+		{
+			len = endPos_ - curPos_ > size ? size : endPos_ - curPos_;
+			memcpy(buffer, buffer_, len);
+		}
+		else
+		{
+			assert((curPos_ + len) % cacheSize_ == 0);
+			int l = ReadToCache(curPos_ + len);
+			//EOF reached
+			if (feof(file_))
+			{
+				len = l > size ? size : l;
+				readed += len;
+				curPos_ += len;
+				size -= len;
+				data += len;
+				memcpy(buffer, buffer_, len);
+				return readed;
+			}
 
+		}
+
+		readed += len;
+		curPos_ += len;
+		size -= len;
+		data += len;
+	}
+
+	return readed;
 }
 
 
 DWORD LL::ReadCacheStream::ReadByte()
 {
-	//todo,add pos member to indicate the current position of file stream
+	DWORD ret;
+	int cur = curPos_;
+	if (cur > endPos_)
+	{
+		ReadToCache(endPos_);
+		cur = curPos_;
+	}
+
+	ret = buffer_[cur];
+	curPos_ += 1;
+}
+
+DWORD LL::ReadCacheStream::ReadWord(bool isLittleEndian)
+{
+	DWORD ret;
+	int cur = curPos_;
+	if (cur > endPos_)
+	{
+		ReadToCache(endPos_);
+		cur = curPos_;
+	}
+	if (isLittleEndian)
+	{	
+		ret = buffer_[cur] + buffer_[cur + 1] << 8;
+	}
+	else
+	{
+		ret = buffer_[cur]<<8 + buffer_[cur + 1];
+	}
+	curPos_ += 2;
+	return ret;
+}
+
+DWORD LL::ReadCacheStream::ReadDWord(bool isLittleEndian)
+{
+	DWORD ret;
+	int cur = curPos_;
+	if (cur > endPos_)
+	{
+		ReadToCache(endPos_);
+		cur = curPos_;
+	}
+	if (isLittleEndian)
+	{
+		ret = buffer_[cur] + buffer_[cur + 1] << 8 + buffer_[cur + 2] << 16 + buffer_[cur + 3] << 24;
+	}
+	else
+	{
+		ret = buffer_[cur] << 24 + buffer_[cur + 1] << 16 + buffer_[cur + 2] << 8 + +buffer_[cur + 3];
+	}
+	curPos_ += 4;
+	return ret;
 }
 
 
