@@ -58,11 +58,11 @@ namespace LL
 		//virtual void SavaImage(const char *fileName) override;
 
 	protected:
-		shared_ptr<BitMapFileHeader> fileHeaderHandle;
-		shared_ptr<BitMapInfoHeader> infoHeaderHandle;
-		shared_ptr<DWORD> palette;
-		shared_ptr<BYTE> pixels;
-		shared_ptr<ReadStreamBase> bmpfile;
+		unique_ptr<BitMapFileHeader> fileHeaderHandle_;
+		unique_ptr<BitMapInfoHeader> infoHeaderHandle_;
+		unique_ptr<DWORD> palette_;
+		unique_ptr<BYTE> pixels_;
+		unique_ptr<ReadStreamBase> bmpfile_;
 		//BYTE *buffer;
 		//for debug
 		void TraceFileHeader();

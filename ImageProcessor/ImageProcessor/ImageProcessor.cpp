@@ -19,7 +19,7 @@
 // 有关类定义的信息，请参阅 ImageProcessor.h
 using namespace LL;
 BMPDecoder::BMPDecoder()
-:fileHeaderHandle(nullptr), infoHeaderHandle(nullptr), palette(nullptr), pixels(nullptr), bmpfile(nullptr)
+:fileHeaderHandle_(nullptr), infoHeaderHandle_(nullptr), palette_(nullptr), pixels_(nullptr), bmpfile_(nullptr)
 {
 
 }
@@ -32,45 +32,45 @@ BMPDecoder::~BMPDecoder()
 void BMPDecoder::TraceFileHeader()
 {
 	//cout.setf(ios::hex);
-	cout << "fileHeaderHandle->type: " << fileHeaderHandle->type << '\n'
-		<< "fileHeaderHandle->size: " << fileHeaderHandle->size << '\n'
-		<< "fileHeaderHandle->reserved1: " << fileHeaderHandle->reserved1 << '\n'
-		<< "fileHeaderHandle->reserved2: " << fileHeaderHandle->reserved2 << '\n'
-		<< "fileHeaderHandle->offBits: " << fileHeaderHandle->offBits << endl;
+	cout << "fileHeaderHandle->type: " << fileHeaderHandle_->type << '\n'
+		<< "fileHeaderHandle->size: " << fileHeaderHandle_->size << '\n'
+		<< "fileHeaderHandle->reserved1: " << fileHeaderHandle_->reserved1 << '\n'
+		<< "fileHeaderHandle->reserved2: " << fileHeaderHandle_->reserved2 << '\n'
+		<< "fileHeaderHandle->offBits: " << fileHeaderHandle_->offBits << endl;
 }
 
 void BMPDecoder::TraceInfoHeader()
 {
-	cout << "infoHeaderHandle->size: " << infoHeaderHandle->size << '\n'
-		<< "infoHeaderHandle->width: " << infoHeaderHandle->width << '\n'
-		<< "infoHeaderHandle->height: " << infoHeaderHandle->height << '\n'
-		<< "infoHeaderHandle->planes: " << infoHeaderHandle->planes << '\n'
-		<< "infoHeaderHandle->bits: " << infoHeaderHandle->bits << '\n'
-		<< "infoHeaderHandle->compression: " << infoHeaderHandle->compression << '\n'
-		<< "infoHeaderHandle->imageSize: " << infoHeaderHandle->imageSize << '\n'
-		<< "infoHeaderHandle->xResolution: " << infoHeaderHandle->xResolution << '\n'
-		<< "infoHeaderHandle->yResolution: " << infoHeaderHandle->yResolution << '\n'
-		<< "infoHeaderHandle->nColors: " << infoHeaderHandle->nColors << '\n'
-		<< "infoHeaderHandle->importantColors: " << infoHeaderHandle->importantColors << endl;
+	cout << "infoHeaderHandle->size: " << infoHeaderHandle_->size << '\n'
+		<< "infoHeaderHandle->width: " << infoHeaderHandle_->width << '\n'
+		<< "infoHeaderHandle->height: " << infoHeaderHandle_->height << '\n'
+		<< "infoHeaderHandle->planes: " << infoHeaderHandle_->planes << '\n'
+		<< "infoHeaderHandle->bits: " << infoHeaderHandle_->bits << '\n'
+		<< "infoHeaderHandle->compression: " << infoHeaderHandle_->compression << '\n'
+		<< "infoHeaderHandle->imageSize: " << infoHeaderHandle_->imageSize << '\n'
+		<< "infoHeaderHandle->xResolution: " << infoHeaderHandle_->xResolution << '\n'
+		<< "infoHeaderHandle->yResolution: " << infoHeaderHandle_->yResolution << '\n'
+		<< "infoHeaderHandle->nColors: " << infoHeaderHandle_->nColors << '\n'
+		<< "infoHeaderHandle->importantColors: " << infoHeaderHandle_->importantColors << endl;
 
 }
 
 bool BMPDecoder::LoadImage(const char *fileName)
 {
 	// bitmap header, 14 bytes
-	if (fileHeaderHandle == nullptr)
+	if (fileHeaderHandle_ == nullptr)
 	{
-		fileHeaderHandle = make_shared<BitMapFileHeader>();
+		fileHeaderHandle_ = make_unique<BitMapFileHeader>();
 	}
-	if (bmpfile == nullptr)
+	if (bmpfile_ == nullptr)
 	{
-		bmpfile = make_shared<FileStream>(fileName, "rb");
+		bmpfile_ = make_unique<ReadCacheStream>(fileName, "rb");
 	}
-	bmpfile->Read(fileHeaderHandle.get(), 0, 14);
+	//bmpfile->Read(fileHeaderHandle.get(), 0, 14);
 
 	//check the file type
-	if (fileHeaderHandle->type == 0x4d42 || fileHeaderHandle->type == 0x4142 || fileHeaderHandle->type == 0x4943
-		|| fileHeaderHandle->type == 0x5043 || fileHeaderHandle->type == 0x4349 || fileHeaderHandle->type == 0x5450)
+	if (fileHeaderHandle_->type == 0x4d42 || fileHeaderHandle_->type == 0x4142 || fileHeaderHandle_->type == 0x4943
+		|| fileHeaderHandle_->type == 0x5043 || fileHeaderHandle_->type == 0x4349 || fileHeaderHandle_->type == 0x5450)
 	{
 	}
 	else
@@ -78,18 +78,18 @@ bool BMPDecoder::LoadImage(const char *fileName)
 		cerr << "not a bmp image" << endl;
 		exit(5);
 	}
-	//fileHeaderHandle->size = ReadNBytes(buffer + 2, 4);
-	//fileHeaderHandle->reserved1 = ReadNBytes(buffer + 6, 2);
-	//fileHeaderHandle->reserved2 = ReadNBytes(buffer + 8, 2);
-	//fileHeaderHandle->offBits = ReadNBytes(buffer + 10, 4);
+	fileHeaderHandle_->size = bmpfile_->ReadDWord(true);
+	fileHeaderHandle_->reserved1 = bmpfile_->ReadWord(true);
+	fileHeaderHandle_->reserved2 = bmpfile_->ReadWord(true);
+	fileHeaderHandle_->offBits = bmpfile_->ReadDWord(true);
 	TraceFileHeader();
 
 	//bitmap info
-	//infoHeaderHandle = make_shared<BitMapInfoHeader>();
-	//infoHeaderHandle->size = ReadNBytes(buffer,14, 4);
-	//bmpfile->Read(infoHeaderHandle.get(), 14, 40);
+	infoHeaderHandle_ = make_unique<BitMapInfoHeader>();
+	infoHeaderHandle_->size = bmpfile_->ReadDWord(true);
+	//bmpfile_->Read(infoHeaderHandle_.get(), 14, 40);
 	//TraceInfoHeader();
-	if (infoHeaderHandle->size == 40)
+	if (infoHeaderHandle_->size == 40)
 	{
 		/*infoHeaderHandle->width = ReadNBytes(buffer + 18, 4);
 		infoHeaderHandle->height = ReadNBytes(buffer + 22, 4);
@@ -101,6 +101,16 @@ bool BMPDecoder::LoadImage(const char *fileName)
 		infoHeaderHandle->yResolution = ReadNBytes(buffer + 42, 4);
 		infoHeaderHandle->nColors = ReadNBytes(buffer + 46, 4);
 		infoHeaderHandle->importantColors = ReadNBytes(buffer + 50, 4);*/
+		infoHeaderHandle_->width = bmpfile_->ReadDWord(true);
+		infoHeaderHandle_->height = bmpfile_->ReadDWord(true);
+		infoHeaderHandle_->planes = bmpfile_->ReadWord(true);
+		infoHeaderHandle_->bits = bmpfile_->ReadWord(true);
+		infoHeaderHandle_->compression = bmpfile_->ReadDWord(true);
+		infoHeaderHandle_->imageSize = bmpfile_->ReadDWord(true);
+		infoHeaderHandle_->xResolution = bmpfile_->ReadDWord(true);
+		infoHeaderHandle_->yResolution = bmpfile_->ReadDWord(true);
+		infoHeaderHandle_->nColors = bmpfile_->ReadDWord(true);
+		infoHeaderHandle_->importantColors = bmpfile_->ReadDWord(true);
 		TraceInfoHeader();
 	}
 
@@ -110,23 +120,23 @@ bool BMPDecoder::LoadImage(const char *fileName)
 		exit(4);
 	}
 
-	if (fileHeaderHandle->offBits == (14 + infoHeaderHandle->size) || infoHeaderHandle->bits >= 24)
+	if (fileHeaderHandle_->offBits == (14 + infoHeaderHandle_->size) || infoHeaderHandle_->bits >= 24)
 	{
-		palette = nullptr;
+		palette_ = nullptr;
 	}
 	else
 	{
 
-		if (infoHeaderHandle->nColors == 0)
+		if (infoHeaderHandle_->nColors == 0)
 		{
-			palette = make_shared<DWORD>(pow(2, infoHeaderHandle->bits));
+			palette_ = make_unique<DWORD>(pow(2, infoHeaderHandle_->bits));
 			//todo
 			//memcpy(palette.get(), buffer + 14 + infoHeaderHandle->size, fileHeaderHandle->size - fileHeaderHandle->offBits);
 		}
 
 	}
 
-	pixels = make_shared<BYTE>(fileHeaderHandle->size - fileHeaderHandle->offBits);
+	pixels_ = make_unique<BYTE>(fileHeaderHandle_->size - fileHeaderHandle_->offBits);
 	//memcpy(pixels.get(), buffer + fileHeaderHandle->offBits + 1, fileHeaderHandle->size - fileHeaderHandle->offBits);
 
 
