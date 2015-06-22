@@ -17,9 +17,8 @@ LL::DecoderBase::~DecoderBase()
 {
 };
 
-LL::ReadCacheStream ::~ReadCacheStream()
+LL::ReadStreamBase::~ReadStreamBase()
 {
-
 };
 
 LL::ReadCacheStream::ReadCacheStream(const char *fileName, const char* mode, int cacheSize)
@@ -89,7 +88,7 @@ size_t LL::ReadCacheStream::ReadToCache(int streamStartPos)
 		fseek(file_, streamStartPos, SEEK_SET);
 	}
 	
-	int len = fread(buffer_, 1, cacheSize_, file_);
+	len = fread(buffer_, 1, cacheSize_, file_);
 	startPos_ = curPos_;
 	endPos_ = startPos_ + len;
 	return len;
@@ -136,36 +135,49 @@ size_t LL::ReadCacheStream::ReadFromCache(void *buffer, int32_t size)
 }
 
 
-DWORD LL::ReadCacheStream::ReadByte()
+BYTE LL::ReadCacheStream::ReadByte()
 {
 	DWORD ret;
 	int cur = curPos_;
-	if (cur > endPos_)
+	int len = 0;
+	if (cur >= endPos_)
 	{
-		ReadToCache(endPos_);
+		len = ReadToCache(endPos_);
 		cur = curPos_;
+		if (len < 1)
+		{
+			exit(6);
+		}
 	}
+	
 
 	ret = buffer_[cur];
 	curPos_ += 1;
+	return ret;
 }
 
-DWORD LL::ReadCacheStream::ReadWord(bool isLittleEndian)
+WORD LL::ReadCacheStream::ReadWord(bool isLittleEndian)
 {
 	DWORD ret;
+	int len = 0;
 	int cur = curPos_;
-	if (cur > endPos_)
+	if (cur >= endPos_)
 	{
-		ReadToCache(endPos_);
+		len = ReadToCache(endPos_);
 		cur = curPos_;
+		if (len < 2)
+		{
+			exit(6);
+		}
 	}
+	
 	if (isLittleEndian)
 	{	
-		ret = buffer_[cur] + buffer_[cur + 1] << 8;
+		ret = buffer_[cur] + (buffer_[cur + 1] << 8);
 	}
 	else
 	{
-		ret = buffer_[cur]<<8 + buffer_[cur + 1];
+		ret = (buffer_[cur]<<8) + buffer_[cur + 1];
 	}
 	curPos_ += 2;
 	return ret;
@@ -175,18 +187,23 @@ DWORD LL::ReadCacheStream::ReadDWord(bool isLittleEndian)
 {
 	DWORD ret;
 	int cur = curPos_;
-	if (cur > endPos_)
+	int len = 0;
+	if (cur >= endPos_)
 	{
-		ReadToCache(endPos_);
+		len = ReadToCache(endPos_);
 		cur = curPos_;
+		if (len < 4)
+		{
+			exit(6);
+		}
 	}
 	if (isLittleEndian)
 	{
-		ret = buffer_[cur] + buffer_[cur + 1] << 8 + buffer_[cur + 2] << 16 + buffer_[cur + 3] << 24;
+		ret = buffer_[cur] + (buffer_[cur + 1] << 8) + (buffer_[cur + 2] << 16) + (buffer_[cur + 3] << 24);
 	}
 	else
 	{
-		ret = buffer_[cur] << 24 + buffer_[cur + 1] << 16 + buffer_[cur + 2] << 8 + +buffer_[cur + 3];
+		ret = (buffer_[cur] << 24) + (buffer_[cur + 1] << 16) +( buffer_[cur + 2] << 8) + buffer_[cur + 3];
 	}
 	curPos_ += 4;
 	return ret;
@@ -209,6 +226,7 @@ LL::WriteCacheStream::~WriteCacheStream()
 bool LL::WriteCacheStream::Open(const char *fileName, const char* mode)
 {
 	//todo
+	return true;
 }
 
 void LL::WriteCacheStream::Close()
