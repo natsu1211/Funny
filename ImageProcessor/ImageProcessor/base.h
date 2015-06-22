@@ -64,8 +64,8 @@ namespace LL
 		//virtual size_t Write(void *buffer, int32_t offset, int32_t size) = 0;
 		//virtual bool Peek(void *buffer, int32_t size) = 0;
 		//n should be a intergal <=4
-		virtual DWORD ReadByte() = 0;
-		virtual DWORD ReadWord(bool isLittleEndian) = 0;
+		virtual BYTE ReadByte() = 0;
+		virtual WORD ReadWord(bool isLittleEndian) = 0;
 		virtual DWORD ReadDWord(bool isLittleEndian) = 0;
 	};
 
@@ -79,8 +79,8 @@ namespace LL
 		//virtual size_t Read(void *buffer, int32_t offset, int32_t size) = 0;
 		virtual size_t Write(void *buffer, int32_t offset, int32_t size) = 0;
 		//virtual bool Peek(void *buffer, int32_t size) = 0;
-		virtual DWORD WriteByte() = 0;
-		virtual DWORD WriteWord(bool isLittleEndian) = 0;
+		virtual BYTE WriteByte() = 0;
+		virtual WORD WriteWord(bool isLittleEndian) = 0;
 		virtual DWORD WriteDWord(bool isLittleEndian) = 0;
 	};
 
@@ -95,14 +95,14 @@ namespace LL
 		int endPos_;
 		int cacheSize_;
 	public:
-		ReadCacheStream(const char *fileName, const char* mode, int cacheSize);
+		ReadCacheStream(const char *fileName, const char* mode, int cacheSize = 65536);
 		virtual ~ReadCacheStream();
 		virtual bool Open(const char *fileName, const char* mode) override;
 		virtual void Close() override;
 		virtual size_t Read(void *buffer, int32_t offset, int32_t size) override;
 		//virtual size_t Write(void *buffer, int32_t offset, int32_t size) override;
-		virtual DWORD ReadByte() override;
-		virtual DWORD ReadWord(bool isLittleEndian) override;
+		virtual BYTE ReadByte() override;
+		virtual WORD ReadWord(bool isLittleEndian) override;
 		virtual DWORD ReadDWord(bool isLittleEndian) override;
 	protected:
 		size_t ReadToCache(int bufStartPos);
@@ -126,8 +126,8 @@ namespace LL
 		virtual void Close() override;
 		//virtual size_t Read(void *buffer, int32_t offset, int32_t size) override;
 		virtual size_t Write(void *buffer, int32_t offset, int32_t size) override;
-		virtual DWORD WriteByte() override;
-		virtual DWORD WriteWord(bool isLittleEndian) override;
+		virtual BYTE WriteByte() override;
+		virtual WORD WriteWord(bool isLittleEndian) override;
 		virtual DWORD WriteDWord(bool isLittleEndian) override;
 	
 		
