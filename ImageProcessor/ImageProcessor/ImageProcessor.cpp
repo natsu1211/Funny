@@ -66,9 +66,10 @@ bool BMPDecoder::LoadImage(const char *fileName)
 	{
 		bmpfile_ = make_unique<ReadCacheStream>(fileName, "rb");
 	}
-	//bmpfile->Read(fileHeaderHandle.get(), 0, 14);
 
-	//check the file type
+
+	fileHeaderHandle_->type = bmpfile_->ReadWord(true);
+
 	if (fileHeaderHandle_->type == 0x4d42 || fileHeaderHandle_->type == 0x4142 || fileHeaderHandle_->type == 0x4943
 		|| fileHeaderHandle_->type == 0x5043 || fileHeaderHandle_->type == 0x4349 || fileHeaderHandle_->type == 0x5450)
 	{
@@ -88,7 +89,7 @@ bool BMPDecoder::LoadImage(const char *fileName)
 	infoHeaderHandle_ = make_unique<BitMapInfoHeader>();
 	infoHeaderHandle_->size = bmpfile_->ReadDWord(true);
 	//bmpfile_->Read(infoHeaderHandle_.get(), 14, 40);
-	//TraceInfoHeader();
+	TraceInfoHeader();
 	if (infoHeaderHandle_->size == 40)
 	{
 		/*infoHeaderHandle->width = ReadNBytes(buffer + 18, 4);

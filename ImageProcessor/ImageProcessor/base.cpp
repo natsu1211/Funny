@@ -21,6 +21,12 @@ LL::ReadStreamBase::~ReadStreamBase()
 {
 };
 
+
+LL::WriteStreamBase::~WriteStreamBase()
+{
+};
+
+
 LL::ReadCacheStream::ReadCacheStream(const char *fileName, const char* mode, int cacheSize)
 :file_(0), buffer_(0), startPos_(0),curPos_(0),endPos_(0), cacheSize_(cacheSize)
 {

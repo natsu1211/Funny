@@ -79,9 +79,9 @@ namespace LL
 		//virtual size_t Read(void *buffer, int32_t offset, int32_t size) = 0;
 		virtual size_t Write(void *buffer, int32_t offset, int32_t size) = 0;
 		//virtual bool Peek(void *buffer, int32_t size) = 0;
-		virtual BYTE WriteByte() = 0;
-		virtual WORD WriteWord(bool isLittleEndian) = 0;
-		virtual DWORD WriteDWord(bool isLittleEndian) = 0;
+		//virtual BYTE WriteByte() = 0;
+		//virtual WORD WriteWord(bool isLittleEndian) = 0;
+		//virtual DWORD WriteDWord(bool isLittleEndian) = 0;
 	};
 
 
@@ -126,9 +126,9 @@ namespace LL
 		virtual void Close() override;
 		//virtual size_t Read(void *buffer, int32_t offset, int32_t size) override;
 		virtual size_t Write(void *buffer, int32_t offset, int32_t size) override;
-		virtual BYTE WriteByte() override;
-		virtual WORD WriteWord(bool isLittleEndian) override;
-		virtual DWORD WriteDWord(bool isLittleEndian) override;
+		//virtual BYTE WriteByte() override;
+		//virtual WORD WriteWord(bool isLittleEndian) override;
+		//virtual DWORD WriteDWord(bool isLittleEndian) override;
 	
 		
 
