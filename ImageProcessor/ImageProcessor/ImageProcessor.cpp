@@ -21,7 +21,7 @@ using namespace LL;
 BMPDecoder::BMPDecoder()
 :fileHeaderHandle_(nullptr), infoHeaderHandle_(nullptr), palette_(nullptr), pixels_(nullptr), bmpfile_(nullptr)
 {
-
+	
 }
 
 BMPDecoder::~BMPDecoder()
